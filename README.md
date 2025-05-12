@@ -25,6 +25,8 @@ Environment Variables
 Make sure to configure your .env file as set in env.example
 create database and provide db name in env accordingly
 
+insatll composer to setup vendor
+
 After setting up the project seed the db using below commands
 
     php artisan db:seed
@@ -34,4 +36,5 @@ After setting up the project seed the db using below commands
 create swagger doc using below command
     php artisan l5-swagger:generate
 
+Laravel 12 provides sanctum by default for authorization purpose, I have used the same for token based authentication 
 
