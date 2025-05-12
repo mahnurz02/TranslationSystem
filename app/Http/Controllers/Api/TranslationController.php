@@ -6,6 +6,7 @@ use App\Models\Translation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreTranslationRequest;
 
 /**
  * @OA\Tag(
@@ -81,36 +82,22 @@ class TranslationController extends Controller
      *     )
      * )
      */
-    public function store(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'key' => 'required|string',
-            'locale' => 'required|string',
-            'value' => 'required|string',
-            'context' => 'required|string',
-        ]);
+    public function store(StoreTranslationRequest $request)
+{
+    $validated = $request->validated();
 
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Validation failed',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
+    $translation = Translation::updateOrCreate(
+        ['key' => $validated['key'], 'locale' => $validated['locale']],
+        ['value' => $validated['value'], 'context' => $validated['context']]
+    );
 
-        $validated = $validator->validated();
+    cache()->forget("translations_{$validated['locale']}");
 
-        $translation = Translation::updateOrCreate(
-            ['key' => $validated['key'], 'locale' => $validated['locale']],
-            ['value' => $validated['value'], 'context' => $validated['context']]
-        );
-
-        cache()->forget("translations_{$validated['locale']}");
-
-        return response()->json([
-            'message' => 'Success',
-            'data' => $translation,
-        ], 200);
-    }
+    return response()->json([
+        'message' => 'Success',
+        'data' => $translation,
+    ], 200);
+}
 
     
     /**
