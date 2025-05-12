@@ -187,24 +187,16 @@ class TranslationController extends Controller
                 $q->where('locale', $request->locale)
             )
             ->orderBy('id')
-            ->paginate(50);
+            ->get(); // Get all results, no pagination
 
         $output = [];
 
-        foreach ($translations->items() as $t) {
+        foreach ($translations as $t) {
             $output[$t->locale][$t->key] = $t->value;
         }
 
         return response()->json([
             'data' => $output,
-            'pagination' => [
-                'total' => $translations->total(),
-                'per_page' => $translations->perPage(),
-                'current_page' => $translations->currentPage(),
-                'last_page' => $translations->lastPage(),
-                'next_page_url' => $translations->nextPageUrl(),
-                'prev_page_url' => $translations->previousPageUrl(),
-            ],
-        ]);
+        ]);    
     }
 }
